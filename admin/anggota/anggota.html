@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Anggota - Perpustakaan</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      padding-top: 56px;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1030;
+      background: linear-gradient(90deg, #0d6efd, #007bff);
+    }
+
+    /* Sidebar */
+    #sidebar {
+      width: 250px;
+      min-height: calc(100vh - 56px);
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 56px;
+    }
+
+    #sidebar h5 {
+      margin-bottom: 20px;
+    }
+
+    #sidebar .nav-link {
+      border-radius: 8px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #sidebar .nav-link.active {
+      background-color: #0d6efd;
+      color: #fff !important;
+    }
+
+    #sidebar .nav-link:hover {
+      background-color: #e9f2ff;
+      color: #0d6efd;
+    }
+
+    /* Main content */
+    #main-content {
+      margin-left: 250px;
+      padding: 20px;
+      flex: 1;
+    }
+
+    footer {
+      background-color: #f8f9fa;
+      text-align: center;
+      padding: 15px;
+      margin-top: 20px;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 991px) {
+      #sidebar {
+        position: relative;
+        width: 100%;
+        min-height: auto;
+        top: 0;
+      }
+
+      #main-content {
+        margin-left: 0;
+      }
+    }
+
+    /* Material Icon style */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    .btn .material-symbols-outlined {
+      margin-right: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#">Perpustakaan</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <form class="d-flex ms-auto" role="search">
+          <input class="form-control me-2" id="searchInput" type="search" placeholder="Cari anggota..."
+            aria-label="Search">
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <h5>Admin Panel</h5>
+      <ul class="nav nav-pills flex-column">
+        <li class="nav-item mb-2">
+          <a class="nav-link" href="../index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link" href="../buku/buku.html"><span class="material-symbols-outlined">menu_book</span> Buku</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link active" href="../anggota/anggota.html"><span class="material-symbols-outlined">group</span> Anggota</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link" href="../peminjaman/peminjaman.html"><span class="material-symbols-outlined">library_books</span> Peminjaman</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link" href="../pengembalian/pengembalian.html"><span class="material-symbols-outlined">assignment_return</span> Pengembalian</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+      <h2 class="fw-bold text-primary mb-4">Manajemen Anggota</h2>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Daftar Anggota</h5>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
+          <span class="material-symbols-outlined">person_add</span> Tambah Anggota
+        </button>
+      </div>
+
+      <!-- Tabel Anggota -->
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle" id="anggotaTable">
+              <thead class="table-primary">
+                <tr>
+                  <th>ID</th>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Ahmad Fauzi</td>
+                  <td>ahmad@mail.com</td>
+                  <td><span class="badge bg-success">Aktif</span></td>
+                  <td>
+                    <button class="btn btn-warning btn-sm editBtn"><span class="material-symbols-outlined">edit</span> Edit</button>
+                    <button class="btn btn-danger btn-sm deleteBtn"><span class="material-symbols-outlined">delete</span> Hapus</button>
+                    <button class="btn btn-secondary btn-sm toggleBtn"><span class="material-symbols-outlined">lock</span> Nonaktifkan</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Siti Aisyah</td>
+                  <td>siti@mail.com</td>
+                  <td><span class="badge bg-danger">Nonaktif</span></td>
+                  <td>
+                    <button class="btn btn-warning btn-sm editBtn"><span class="material-symbols-outlined">edit</span> Edit</button>
+                    <button class="btn btn-danger btn-sm deleteBtn"><span class="material-symbols-outlined">delete</span> Hapus</button>
+                    <button class="btn btn-success btn-sm toggleBtn"><span class="material-symbols-outlined">lock_open</span> Aktifkan</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-4 text-muted small">
+        &copy; 2025 Perpustakaan. All rights reserved.
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Anggota -->
+  <div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">Tambah Anggota Baru</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addForm">
+            <div class="mb-3">
+              <label class="form-label">Nama Lengkap</label>
+              <input type="text" class="form-control" id="nama" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Tambah</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Pencarian anggota
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+      const filter = this.value.toLowerCase();
+      document.querySelectorAll('#anggotaTable tbody tr').forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(filter) ? '' : 'none';
+      });
+    });
+
+    // Tambah anggota
+    document.getElementById('addForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const table = document.querySelector('#anggotaTable tbody');
+      const id = table.rows.length + 1;
+      const nama = document.getElementById('nama').value;
+      const email = document.getElementById('email').value;
+
+      const newRow = table.insertRow();
+      newRow.innerHTML = `
+        <td>${id}</td>
+        <td>${nama}</td>
+        <td>${email}</td>
+        <td><span class="badge bg-success">Aktif</span></td>
+        <td>
+          <button class="btn btn-warning btn-sm editBtn"><span class="material-symbols-outlined">edit</span> Edit</button>
+          <button class="btn btn-danger btn-sm deleteBtn"><span class="material-symbols-outlined">delete</span> Hapus</button>
+          <button class="btn btn-secondary btn-sm toggleBtn"><span class="material-symbols-outlined">lock</span> Nonaktifkan</button>
+        </td>`;
+
+      this.reset();
+      bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+    });
+
+    // Hapus anggota
+    document.getElementById('anggotaTable').addEventListener('click', function (e) {
+      if (e.target.closest('.deleteBtn')) {
+        if (confirm('Yakin ingin menghapus anggota ini?')) {
+          e.target.closest('tr').remove();
+        }
+      }
+    });
+
+    // Aktif/nonaktif anggota
+    document.getElementById('anggotaTable').addEventListener('click', function (e) {
+      const btn = e.target.closest('.toggleBtn');
+      if (btn) {
+        const row = btn.closest('tr');
+        const badge = row.querySelector('.badge');
+        if (badge.classList.contains('bg-success')) {
+          badge.classList.replace('bg-success', 'bg-danger');
+          badge.innerText = 'Nonaktif';
+          btn.classList.replace('btn-secondary', 'btn-success');
+          btn.innerHTML = '<span class="material-symbols-outlined">lock_open</span> Aktifkan';
+        } else {
+          badge.classList.replace('bg-danger', 'bg-success');
+          badge.innerText = 'Aktif';
+          btn.classList.replace('btn-success', 'btn-secondary');
+          btn.innerHTML = '<span class="material-symbols-outlined">lock</span> Nonaktifkan';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
