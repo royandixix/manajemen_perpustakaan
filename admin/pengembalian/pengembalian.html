@@ -115,7 +115,7 @@
         <span class="material-icons align-middle">local_library</span>
         Perpustakaan
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler" type="button">
         <span class="navbar-toggler-icon"></span>
       </button>
     </div>
@@ -163,16 +163,16 @@
 
       <!-- Tombol tambah & search -->
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
+        <button class="btn btn-success" disabled>
           <span class="material-icons align-middle">add_circle</span> Proses Pengembalian
         </button>
-        <input type="text" id="searchInput" class="form-control w-25" placeholder="Cari anggota/buku...">
+        <input type="text" class="form-control w-25" placeholder="Cari anggota/buku..." disabled>
       </div>
 
       <!-- Tabel Pengembalian -->
       <div class="card p-3">
         <div class="table-responsive">
-          <table class="table table-striped table-hover table-bordered align-middle" id="pengembalianTable">
+          <table class="table table-striped table-hover table-bordered align-middle">
             <thead class="table-primary text-center">
               <tr>
                 <th>ID</th>
@@ -193,8 +193,8 @@
                 <td>2025-10-10</td>
                 <td>Rp 0</td>
                 <td>
-                  <button class="btn btn-sm btn-warning"><span class="material-icons">edit</span></button>
-                  <button class="btn btn-sm btn-danger"><span class="material-icons">delete</span></button>
+                  <button class="btn btn-sm btn-warning" disabled><span class="material-icons">edit</span></button>
+                  <button class="btn btn-sm btn-danger" disabled><span class="material-icons">delete</span></button>
                 </td>
               </tr>
               <tr>
@@ -205,8 +205,8 @@
                 <td>2025-10-12</td>
                 <td>Rp 4000</td>
                 <td>
-                  <button class="btn btn-sm btn-warning"><span class="material-icons">edit</span></button>
-                  <button class="btn btn-sm btn-danger"><span class="material-icons">delete</span></button>
+                  <button class="btn btn-sm btn-warning" disabled><span class="material-icons">edit</span></button>
+                  <button class="btn btn-sm btn-danger" disabled><span class="material-icons">delete</span></button>
                 </td>
               </tr>
             </tbody>
@@ -221,8 +221,8 @@
     </div>
   </div>
 
-  <!-- Modal Pengembalian -->
-  <div class="modal fade" id="addModal" tabindex="-1">
+  <!-- Modal Pengembalian (Nonaktif, hanya tampilan) -->
+  <div class="modal fade show d-block position-static" tabindex="-1" style="display:none;" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -230,31 +230,31 @@
             <span class="material-icons text-success">assignment_turned_in</span>
             Proses Pengembalian Buku
           </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" disabled></button>
         </div>
         <div class="modal-body">
-          <form id="returnForm">
+          <form>
             <div class="mb-3">
               <label class="form-label">Nama Anggota</label>
-              <input type="text" class="form-control" id="namaAnggota" required>
+              <input type="text" class="form-control" disabled>
             </div>
             <div class="mb-3">
               <label class="form-label">Judul Buku</label>
-              <input type="text" class="form-control" id="judulBuku" required>
+              <input type="text" class="form-control" disabled>
             </div>
             <div class="mb-3">
               <label class="form-label">Tanggal Pinjam</label>
-              <input type="date" class="form-control" id="tglPinjam" required>
+              <input type="date" class="form-control" disabled>
             </div>
             <div class="mb-3">
               <label class="form-label">Tanggal Kembali</label>
-              <input type="date" class="form-control" id="tglKembali" required>
+              <input type="date" class="form-control" disabled>
             </div>
             <div class="mb-3">
               <label class="form-label">Denda (otomatis)</label>
-              <input type="text" class="form-control" id="denda" readonly value="Rp 0">
+              <input type="text" class="form-control" readonly value="Rp 0">
             </div>
-            <button type="submit" class="btn btn-success w-100">
+            <button type="button" class="btn btn-success w-100" disabled>
               <span class="material-icons align-middle">done</span>
               Simpan Pengembalian
             </button>
@@ -264,51 +264,7 @@
     </div>
   </div>
 
-  <!-- Script -->
+  <!-- Bootstrap JS (hanya untuk style, tidak ada script aktif) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const form = document.getElementById("returnForm");
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const nama = document.getElementById("namaAnggota").value;
-      const judul = document.getElementById("judulBuku").value;
-      const pinjam = new Date(document.getElementById("tglPinjam").value);
-      const kembali = new Date(document.getElementById("tglKembali").value);
-      const dendaInput = document.getElementById("denda");
-
-      const selisih = Math.floor((kembali - pinjam) / (1000 * 60 * 60 * 24));
-      const denda = selisih > 7 ? (selisih - 7) * 1000 : 0;
-      dendaInput.value = "Rp " + denda;
-
-      const tbody = document.querySelector("#pengembalianTable tbody");
-      const id = tbody.rows.length + 1;
-
-      const newRow = tbody.insertRow();
-      newRow.innerHTML = `
-        <td>${id}</td>
-        <td>${nama}</td>
-        <td>${judul}</td>
-        <td>${pinjam.toISOString().split('T')[0]}</td>
-        <td>${kembali.toISOString().split('T')[0]}</td>
-        <td>Rp ${denda}</td>
-        <td>
-          <button class="btn btn-sm btn-warning"><span class="material-icons">edit</span></button>
-          <button class="btn btn-sm btn-danger"><span class="material-icons">delete</span></button>
-        </td>
-      `;
-
-      form.reset();
-      bootstrap.Modal.getInstance(document.getElementById("addModal")).hide();
-    });
-
-    // Search filter
-    document.getElementById("searchInput").addEventListener("keyup", function () {
-      const filter = this.value.toLowerCase();
-      document.querySelectorAll("#pengembalianTable tbody tr").forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
-      });
-    });
-  </script>
 </body>
 </html>

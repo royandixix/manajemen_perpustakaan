@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Riwayat Peminjaman Saya - PerpustakaanKu</title>
 
-  <!-- Bootstrap 5 -->
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
   <!-- Material Icons -->
@@ -84,22 +84,17 @@
       <a class="navbar-brand fw-bold text-primary" href="#">
         <span class="material-icons align-middle">account_circle</span> Halo, User
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="collapse navbar-collapse show" id="navbarNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link" href="katalog.html">Katalog Buku</a></li>
           <li class="nav-item"><a class="nav-link active fw-semibold" href="riwayat.html">Riwayat Peminjaman</a></li>
-          <!-- Tombol Logout -->
           <li class="nav-item"><a class="nav-link text-danger" href="../login.html">Keluar</a></li>
         </ul>
 
-        <form class="d-flex ms-3" role="search" id="searchForm">
-          <input class="form-control me-2" type="search" placeholder="Cari buku..." id="searchInput" />
-          <button class="btn btn-outline-primary" type="submit">Cari</button>
+        <form class="d-flex ms-3" role="search">
+          <input class="form-control me-2" type="search" placeholder="Cari buku..." disabled />
+          <button class="btn btn-outline-primary" type="button" disabled>Cari</button>
         </form>
       </div>
     </div>
@@ -118,7 +113,7 @@
     <div class="row mb-4">
       <div class="col-md-4">
         <label class="form-label fw-semibold">Filter Status</label>
-        <select class="form-select" id="statusFilter">
+        <select class="form-select" disabled>
           <option value="">Semua</option>
           <option value="aktif">Aktif</option>
           <option value="selesai">Selesai</option>
@@ -181,27 +176,6 @@
     <p class="mb-0">&copy; 2025 PerpustakaanKu. Semua hak dilindungi.</p>
   </footer>
 
-  <!-- JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Filter status
-    document.getElementById('statusFilter').addEventListener('change', function () {
-      const filter = this.value.toLowerCase();
-      document.querySelectorAll('#loanList .card').forEach(card => {
-        const status = card.querySelector('.status-badge').innerText.toLowerCase();
-        card.parentElement.style.display = (filter === '' || status.includes(filter)) ? '' : 'none';
-      });
-    });
-
-    // Search
-    document.getElementById('searchForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      document.querySelectorAll('#loanList .card').forEach(card => {
-        card.parentElement.style.display = card.innerText.toLowerCase().includes(query) ? '' : 'none';
-      });
-    });
-  </script>
 </body>
 
 </html>

@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Transaksi Peminjaman - Perpustakaan</title>
 
   <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
   <!-- Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
@@ -19,7 +18,6 @@
       padding-top: 56px;
     }
 
-    /* Navbar */
     .navbar {
       position: fixed;
       top: 0;
@@ -28,7 +26,6 @@
       background: linear-gradient(90deg, #0d6efd, #007bff);
     }
 
-    /* Sidebar */
     #sidebar {
       width: 250px;
       min-height: calc(100vh - 56px);
@@ -61,7 +58,6 @@
       color: #0d6efd;
     }
 
-    /* Main content */
     #main-content {
       margin-left: 250px;
       padding: 20px;
@@ -114,7 +110,7 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <form class="d-flex ms-auto" role="search">
-          <input class="form-control me-2" type="search" placeholder="Cari transaksi..." aria-label="Search">
+          <input class="form-control me-2" type="search" placeholder="Cari transaksi..." aria-label="Search" disabled>
         </form>
       </div>
     </div>
@@ -165,7 +161,7 @@
         <form id="formPeminjaman">
           <div class="mb-3">
             <label class="form-label">Pilih Anggota</label>
-            <select class="form-select" id="anggotaSelect" required>
+            <select class="form-select" id="anggotaSelect" required disabled>
               <option value="">-- Pilih Anggota --</option>
               <option>Ahmad Fauzi</option>
               <option>Siti Aisyah</option>
@@ -175,28 +171,28 @@
 
           <div class="mb-3">
             <label class="form-label">Pilih Buku</label>
-            <select class="form-select" id="bukuSelect" required>
+            <select class="form-select" id="bukuSelect" required disabled>
               <option value="">-- Pilih Buku --</option>
-              <option data-stok="3">Belajar Python (stok: 3)</option>
-              <option data-stok="0">Dasar-Dasar AI (stok: 0)</option>
-              <option data-stok="2">Manajemen Waktu (stok: 2)</option>
+              <option>Belajar Python (stok: 3)</option>
+              <option>Dasar-Dasar AI (stok: 0)</option>
+              <option>Manajemen Waktu (stok: 2)</option>
             </select>
           </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label">Tanggal Pinjam</label>
-              <input type="date" id="tglPinjam" class="form-control" required>
+              <input type="date" id="tglPinjam" class="form-control" required disabled>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">Tanggal Kembali</label>
-              <input type="date" id="tglKembali" class="form-control" required>
+              <input type="date" id="tglKembali" class="form-control" required disabled>
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 mt-2">
-            <span class="material-symbols-outlined align-middle me-1">check_circle</span>
-            Proses Peminjaman
+          <button type="button" class="btn btn-secondary w-100 mt-2" disabled>
+            <span class="material-symbols-outlined align-middle me-1">block</span>
+            JavaScript Dinonaktifkan
           </button>
         </form>
       </div>
@@ -208,7 +204,7 @@
           Daftar Transaksi Peminjaman
         </h5>
         <div class="table-responsive">
-          <table class="table table-bordered table-striped align-middle text-center" id="tabelTransaksi">
+          <table class="table table-bordered table-striped align-middle text-center">
             <thead class="table-primary">
               <tr>
                 <th>#</th>
@@ -237,50 +233,7 @@
     </div>
   </div>
 
-  <!-- JS -->
+  <!-- Bootstrap Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    const form = document.getElementById("formPeminjaman");
-    const tabel = document.querySelector("#tabelTransaksi tbody");
-
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const anggota = document.getElementById("anggotaSelect").value;
-      const bukuSelect = document.getElementById("bukuSelect");
-      const buku = bukuSelect.options[bukuSelect.selectedIndex].text.split(" (")[0];
-      const stok = parseInt(bukuSelect.options[bukuSelect.selectedIndex].dataset.stok);
-      const tglPinjam = document.getElementById("tglPinjam").value;
-      const tglKembali = document.getElementById("tglKembali").value;
-
-      if (stok <= 0) {
-        alert("❌ Stok buku habis! Tidak dapat dipinjam.");
-        return;
-      }
-
-      const start = new Date(tglPinjam);
-      const end = new Date(tglKembali);
-      const diff = (end - start) / (1000 * 3600 * 24);
-
-      if (diff > 7) {
-        alert("⚠️ Batas waktu peminjaman maksimal 7 hari!");
-        return;
-      }
-
-      const newRow = tabel.insertRow();
-      newRow.innerHTML = `
-        <td>${tabel.rows.length}</td>
-        <td>${anggota}</td>
-        <td>${buku}</td>
-        <td>${tglPinjam}</td>
-        <td>${tglKembali}</td>
-      `;
-
-      alert("✅ Transaksi berhasil disimpan!");
-      form.reset();
-    });
-  </script>
 </body>
-
 </html>
