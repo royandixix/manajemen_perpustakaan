@@ -14,14 +14,6 @@ if (!isset($_SESSION['admin'])) {
 // Hapus buku
 if(isset($_GET['hapus'])){
     $id = intval($_GET['hapus']);
-    // Hapus file gambar jika ada
-    $res = $conn->query("SELECT img FROM buku_222274 WHERE id_buku = $id");
-    if($res && $res->num_rows > 0){
-        $data = $res->fetch_assoc();
-        if(!empty($data['img']) && file_exists('../../public/img/'.$data['img'])){
-            unlink('../../public/img/'.$data['img']);
-        }
-    }
     $conn->query("DELETE FROM buku_222274 WHERE id_buku = $id");
     header("Location: buku.php");
     exit();
@@ -34,7 +26,7 @@ $result = $conn->query($sql);
 
 <?php include '../templates/header_sidebar.php'; ?>
 
-<div id="main-content" class="px-4 py-3">
+<div id="main-content">
   <h2 class="fw-bold text-primary mb-4">
     <span class="material-symbols-outlined align-middle">menu_book</span> Manajemen Buku
   </h2>
@@ -49,7 +41,7 @@ $result = $conn->query($sql);
   <div class="card shadow-sm">
     <div class="card-body">
       <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle text-center" id="tabelBuku">
+        <table class="table table-striped table-hover table-bordered text-center align-middle" id="tabelBuku">
           <thead class="table-primary">
             <tr>
               <th>ID</th>
@@ -64,13 +56,13 @@ $result = $conn->query($sql);
             </tr>
           </thead>
           <tbody>
-            <?php if($result && $result->num_rows > 0): ?>
+            <?php if($result->num_rows > 0): ?>
               <?php while($row = $result->fetch_assoc()): ?>
                 <tr>
                   <td><?= $row['id_buku'] ?></td>
                   <td>
-                    <img src="<?= !empty($row['img']) ? '../../public/img/'.$row['img'] : 'https://via.placeholder.com/60x80?text=No+Image' ?>" 
-                         alt="<?= htmlspecialchars($row['judul']) ?>" width="60" class="rounded">
+                    <img src="<?= !empty($row['img_url']) ? $row['img_url'] : 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=80&q=80' ?>" 
+                         alt="<?= htmlspecialchars($row['judul']) ?>" width="60">
                   </td>
                   <td><?= htmlspecialchars($row['judul']) ?></td>
                   <td><?= htmlspecialchars($row['penulis']) ?></td>
@@ -79,11 +71,11 @@ $result = $conn->query($sql);
                   <td><?= htmlspecialchars($row['kategori']) ?></td>
                   <td><?= $row['stok'] ?></td>
                   <td>
-                    <a href="edit_buku.php?id=<?= $row['id_buku'] ?>" class="btn btn-warning btn-sm mb-1">
-                      <span class="material-symbols-outlined align-middle">edit</span>
+                    <a href="edit_buku.php?id=<?= $row['id_buku'] ?>" class="btn btn-warning btn-sm">
+                      <span class="material-symbols-outlined align-middle">edit</span> Edit
                     </a>
-                    <a href="buku.php?hapus=<?= $row['id_buku'] ?>" class="btn btn-danger btn-sm mb-1" onclick="return confirm('Yakin hapus buku?')">
-                      <span class="material-symbols-outlined align-middle">delete</span>
+                    <a href="buku.php?hapus=<?= $row['id_buku'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus buku?')">
+                      <span class="material-symbols-outlined align-middle">delete</span> Hapus
                     </a>
                   </td>
                 </tr>
@@ -118,3 +110,5 @@ searchInput.addEventListener('keyup', function() {
   });
 });
 </script>
+</body>
+</html>

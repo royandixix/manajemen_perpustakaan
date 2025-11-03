@@ -1,16 +1,17 @@
 <?php
+// Mulai session jika belum
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Pastikan user login
-if (!isset($_SESSION['user'])) {
-    header("Location: ../login.php");
-    exit();
+// Ambil nama user dari session, default 'Pengguna'
+$namaUser = 'Pengguna';
+if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+    $namaUser = $_SESSION['user']['nama_222274'] ?? 'Pengguna';
 }
 
-// Ambil nama user
-$namaUser = htmlspecialchars($_SESSION['user']);
+// Lindungi output agar aman di HTML
+$namaUser = htmlspecialchars($namaUser, ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
 <html lang="id">

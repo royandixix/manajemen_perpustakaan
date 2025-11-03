@@ -3,8 +3,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-include 'config/connect.php';
 session_start();
+include 'config/connect.php';
 
 $loginError = '';
 
@@ -14,24 +14,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['login-role'];
 
     if ($role === 'admin') {
-        $sql = "SELECT * FROM admin_222274 WHERE username_222274='$username' LIMIT 1";
-    } else { // user
-        $sql = "SELECT * FROM anggota_222274 WHERE email_222274='$username' LIMIT 1";
+        $sql = "SELECT * FROM admin_222274 WHERE username_222274=? LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $username);
+    } else { // user/anggota
+        $sql = "SELECT * FROM anggota_222274 WHERE email_222274=? LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $username);
     }
 
-    $result = mysqli_query($conn, $sql);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $user = mysqli_fetch_assoc($result);
-
+    if ($result && $result->num_rows > 0) {
+        $user = $result->fetch_assoc();
         $user_password_hash = $role === 'admin' ? $user['password_222274'] : $user['password_222274'];
 
         if (password_verify($password, $user_password_hash)) {
             if ($role === 'admin') {
-                $_SESSION['admin'] = $user['nama_lengkap_222274'];
+                $_SESSION['admin'] = [
+                    'id' => $user['id_admin_222274'] ?? $user['id'], // sesuaikan kolom
+                    'nama' => $user['nama_lengkap_222274']
+                ];
                 header("Location: admin/index/index.php");
             } else {
-                $_SESSION['user'] = $user['nama_222274'];
+                $_SESSION['user'] = [
+                    'id_anggota_222274' => $user['id_anggota_222274'],
+                    'nama_222274' => $user['nama_222274']
+                ];
                 header("Location: user/Katalog.php");
             }
             exit();
@@ -41,6 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $loginError = "Username/email tidak ditemukan!";
     }
+
+    $stmt->close();
 }
 ?>
 
@@ -70,7 +82,7 @@ background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?au
     <h3 class="text-center mb-4">Login Perpustakaan</h3>
 
     <?php if($loginError): ?>
-      <div class="alert alert-danger"><?= $loginError ?></div>
+      <div class="alert alert-danger"><?= htmlspecialchars($loginError) ?></div>
     <?php endif; ?>
 
     <form action="" method="post">

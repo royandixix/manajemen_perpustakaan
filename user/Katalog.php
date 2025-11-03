@@ -1,11 +1,24 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 $pageTitle = "Katalog Buku - PerpustakaanKu";
 
 // Koneksi database
-include 'config/connect.php';
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "perpustakaan_db_222274";
 
-// Include template header dan navbar
+$conn = mysqli_connect($host, $user, $pass, $db);
+if (!$conn) die("Koneksi gagal: " . mysqli_connect_error());
+
+// Cek login user/admin
+$userLoggedIn = isset($_SESSION['user']);
+$namaUser = $userLoggedIn ? $_SESSION['user']['nama_222274'] : null;
+
 include 'templates/header.php';
 include 'templates/navbar.php';
 ?>
@@ -13,7 +26,11 @@ include 'templates/navbar.php';
 <section class="hero mt-5">
   <div class="container">
     <h1 class="display-5 mb-3">📚 Katalog Buku Perpustakaan</h1>
-    <p class="lead">Telusuri daftar buku yang tersedia di perpustakaan</p>
+    <?php if ($userLoggedIn): ?>
+        <p class="lead">Selamat datang, <?= htmlspecialchars($namaUser) ?>!</p>
+    <?php else: ?>
+        <p class="lead">Telusuri daftar buku yang tersedia di perpustakaan</p>
+    <?php endif; ?>
   </div>
 </section>
 
@@ -41,19 +58,34 @@ include 'templates/navbar.php';
 
     if ($result && mysqli_num_rows($result) > 0) {
         while ($buku = mysqli_fetch_assoc($result)) {
-            $img = !empty($buku['img_url']) ? $buku['img_url'] : 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=500&q=80';
+            $img = !empty($buku['img']) ? $buku['img'] : 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=500&q=80';
             $status = ($buku['stok'] > 0) ? 'Tersedia' : 'Tidak Tersedia';
             $statusClass = ($buku['stok'] > 0) ? 'status-aktif' : 'status-tidak';
             ?>
             <div class="col-md-3 mb-4 book-card" data-kategori="<?= htmlspecialchars($buku['kategori']) ?>">
               <div class="card h-100">
-                <img src="<?= $img ?>" class="card-img-top" alt="<?= htmlspecialchars($buku['judul']) ?>">
+                <img src="<?= htmlspecialchars($img) ?>" class="card-img-top" alt="<?= htmlspecialchars($buku['judul']) ?>">
                 <div class="card-body">
                   <h5 class="card-title"><?= htmlspecialchars($buku['judul']) ?></h5>
                   <p class="card-text text-muted mb-1">Pengarang: <?= htmlspecialchars($buku['penulis']) ?></p>
                   <p class="card-text text-muted mb-1">Tahun Terbit: <?= htmlspecialchars($buku['tahun_terbit']) ?></p>
                   <p class="card-text text-muted mb-1">Kategori: <?= htmlspecialchars($buku['kategori']) ?></p>
                   <p class="card-text"><span class="status-badge <?= $statusClass ?>"><?= $status ?></span></p>
+
+                  <?php if ($userLoggedIn): ?>
+                    <?php if ($buku['stok'] > 0): ?>
+                        <form method="POST" action="pinjam.php">
+                            <input type="hidden" name="id_buku" value="<?= $buku['id_buku'] ?>">
+                            <input type="hidden" name="id_anggota" value="<?= $_SESSION['user']['id_anggota_222274'] ?>">
+                            <button type="submit" class="btn btn-primary btn-sm mt-2">Pinjam</button>
+                        </form>
+                    <?php else: ?>
+                        <p class="text-danger">Stok habis</p>
+                    <?php endif; ?>
+                  <?php else: ?>
+                    <p><a href="login.php">Login untuk meminjam</a></p>
+                  <?php endif; ?>
+
                 </div>
               </div>
             </div>
@@ -66,17 +98,6 @@ include 'templates/navbar.php';
   </div>
 </div>
 
-<style>
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-.status-aktif { background-color: #198754; color: #fff; }
-.status-tidak { background-color: #dc3545; color: #fff; }
-</style>
-
 <script>
 const categoryFilter = document.getElementById('categoryFilter');
 categoryFilter.addEventListener('change', function() {
@@ -87,4 +108,7 @@ categoryFilter.addEventListener('change', function() {
 });
 </script>
 
-<?php include 'templates/footer.php'; ?>
+<?php
+mysqli_close($conn);
+include 'templates/footer.php';
+?>

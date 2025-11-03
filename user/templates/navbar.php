@@ -1,7 +1,15 @@
 <?php
-$namaUser = $_SESSION['user'] ?? 'Pengguna';
-?>
+// Pastikan session sudah start
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// Default nama user
+$namaUser = 'Pengguna';
+if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+    $namaUser = htmlspecialchars($_SESSION['user']['nama_222274'] ?? 'Pengguna', ENT_QUOTES, 'UTF-8');
+}
+?>
 <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="Katalog.php">
@@ -25,7 +33,7 @@ $namaUser = $_SESSION['user'] ?? 'Pengguna';
         <li class="nav-item dropdown position-relative">
           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="accountDropdown">
             <span class="material-icons align-middle me-1">account_circle</span>
-            <?= htmlspecialchars($namaUser) ?>
+            <?= $namaUser ?>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="#">Profil Saya</a></li>
@@ -43,46 +51,16 @@ $namaUser = $_SESSION['user'] ?? 'Pengguna';
   </div>
 </nav>
 
-<style>
-/* Hover effect link */
-.navbar-nav .nav-link {
-  transition: color 0.2s ease-in-out;
-}
-.navbar-nav .nav-link:hover {
-  color: #0d6efd;
-}
-
-/* Dropdown akun hover */
-.nav-item.dropdown {
-  position: relative;
-}
-.nav-item.dropdown:hover > .dropdown-menu {
-  display: block;
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-/* CSS smooth dropdown */
-.dropdown-menu {
-  display: none;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: all 0.25s ease-in-out;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-}
-</style>
-
 <script>
-// Mobile friendly: klik tetap bisa toggle dropdown
+// Mobile friendly dropdown toggle
 const dropdown = document.querySelector('.nav-item.dropdown .dropdown-toggle');
-dropdown.addEventListener('click', function(e) {
-  if (window.innerWidth < 992) { // lg breakpoint
-    e.preventDefault();
-    this.parentElement.classList.toggle('show');
-    this.nextElementSibling.classList.toggle('show');
-  }
-});
+if(dropdown){
+    dropdown.addEventListener('click', function(e) {
+        if (window.innerWidth < 992) { // lg breakpoint
+            e.preventDefault();
+            this.parentElement.classList.toggle('show');
+            this.nextElementSibling.classList.toggle('show');
+        }
+    });
+}
 </script>
