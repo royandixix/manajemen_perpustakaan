@@ -30,15 +30,20 @@ if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
         </li>
 
         <!-- Dropdown akun -->
-        <li class="nav-item dropdown position-relative">
-          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="accountDropdown">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="accountDropdown"
+             role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="material-icons align-middle me-1">account_circle</span>
             <?= $namaUser ?>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end">
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="accountDropdown">
             <li><a class="dropdown-item" href="#">Profil Saya</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="../login.php?logout=1">Keluar</a></li>
+            <li>
+              <a class="dropdown-item text-danger" href="../login.php?logout=1">
+                <span class="material-icons align-middle me-1" style="font-size: 18px;">logout</span> Keluar
+              </a>
+            </li>
           </ul>
         </li>
       </ul>
@@ -51,16 +56,5 @@ if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
   </div>
 </nav>
 
-<script>
-// Mobile friendly dropdown toggle
-const dropdown = document.querySelector('.nav-item.dropdown .dropdown-toggle');
-if(dropdown){
-    dropdown.addEventListener('click', function(e) {
-        if (window.innerWidth < 992) { // lg breakpoint
-            e.preventDefault();
-            this.parentElement.classList.toggle('show');
-            this.nextElementSibling.classList.toggle('show');
-        }
-    });
-}
-</script>
+<!-- Pastikan Bootstrap JS sudah aktif -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

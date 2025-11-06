@@ -48,6 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $error = "Gagal update tanggal kembali: " . $conn->error;
     }
+
+
+    // data pmasukan`
 }
 
 // Hitung denda otomatis (misal 1000/hari keterlambatan)

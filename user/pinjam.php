@@ -1,58 +1,68 @@
 <?php
-
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
+include '../config/connect.php';
 
-// Cek apakah user sudah login
-if (!isset($_SESSION['id_anggota_222274'])) {
+
+if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
 }
 
-// Koneksi database
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "perpustakaan_db_222274";
+$id_anggota = $_SESSION['user']['id_anggota_222274'] ?? 0;
 
-$conn = mysqli_connect($host, $user, $pass, $db);
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
-}
+// Ambil ID buku dari GET, bukan POST
+$id_buku = $_GET['id_buku'] ?? 0;
 
-// Ambil id_buku dari GET
-if (!isset($_GET['id_buku'])) {
+if (!$id_buku) {
+    $_SESSION['pinjam_error'] = "ID buku tidak valid.";
     header("Location: katalog.php");
     exit();
 }
 
-$id_buku = intval($_GET['id_buku']);
-$id_anggota = $_SESSION['id_anggota_222274'];
+// Ambil data buku
+$sql = "SELECT judul, stok FROM buku_222274 WHERE id_buku = $id_buku";
+$res = mysqli_query($conn, $sql);
+
+if (!$res) {
+    die("Query error: " . mysqli_error($conn));
+}
+
+$buku = mysqli_fetch_assoc($res);
+
+if (!$buku) {
+    $_SESSION['pinjam_error'] = "Buku tidak ditemukan.";
+    header("Location: katalog.php");
+    exit();
+}
+
+$judul_buku = $buku['judul'];
 
 // Cek stok buku
-$bukuQuery = "SELECT stok FROM buku_222274 WHERE id_buku = $id_buku";
-$bukuResult = mysqli_query($conn, $bukuQuery);
-if (!$bukuResult || mysqli_num_rows($bukuResult) == 0) {
-    die("Buku tidak ditemukan.");
-}
-
-$buku = mysqli_fetch_assoc($bukuResult);
 if ($buku['stok'] <= 0) {
-    die("Buku stok habis.");
+    $_SESSION['pinjam_error'] = "Stok buku habis!";
+    header("Location: katalog.php");
+    exit();
 }
 
-// Insert ke tabel peminjaman
-$pinjamQuery = "INSERT INTO peminjaman_222274 (id_anggota, id_buku, tanggal_pinjam, status) VALUES ($id_anggota, $id_buku, CURDATE(), 'dipinjam')";
-mysqli_query($conn, $pinjamQuery);
+// Tambah ke tabel peminjaman
+$sqlInsert = "INSERT INTO peminjaman_222274 (id_anggota, id_buku, tanggal_pinjam, status)
+              VALUES ($id_anggota, $id_buku, CURDATE(), 'dipinjam')";
+if (!mysqli_query($conn, $sqlInsert)) {
+    die("Gagal insert peminjaman: " . mysqli_error($conn));
+}
 
-// Kurangi stok buku
-$updateStok = "UPDATE buku_222274 SET stok = stok - 1 WHERE id_buku = $id_buku";
-mysqli_query($conn, $updateStok);
+// Kurangi stok
+$sqlUpdate = "UPDATE buku_222274 SET stok = stok - 1 WHERE id_buku = $id_buku";
+if (!mysqli_query($conn, $sqlUpdate)) {
+    die("Gagal update stok: " . mysqli_error($conn));
+}
 
-// Redirect ke katalog dengan pesan sukses
-header("Location: katalog.php?success=1");
+$_SESSION['pinjam_success'] = "Berhasil meminjam buku: $judul_buku";
+header("Location: riwayat.php");
 exit();
 ?>
+
