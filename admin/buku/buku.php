@@ -44,7 +44,6 @@ $result = $conn->query($sql);
       opacity: 0;
       transform: translateY(10px);
     }
-
     to {
       opacity: 1;
       transform: translateY(0);
@@ -233,7 +232,7 @@ $result = $conn->query($sql);
   </footer>
 </div>
 
-<!-- ====== SCRIPT FUTURISTIC ====== -->
+<!-- ====== SCRIPTS ====== -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.7/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.min.js"></script>
@@ -244,9 +243,7 @@ $result = $conn->query($sql);
     $('#example').DataTable({
       responsive: true,
       pageLength: 6,
-      order: [
-        [0, 'asc']
-      ],
+      order: [[0, 'asc']],
       language: {
         search: "🔍 Cari Buku:",
         lengthMenu: "Tampilkan _MENU_ entri",
@@ -261,11 +258,7 @@ $result = $conn->query($sql);
     });
   });
 </script>
-<script>
-
-</script>
 
 <?php include '../templates/footer.php'; ?>
 </body>
-
 </html>

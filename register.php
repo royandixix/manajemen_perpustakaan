@@ -19,21 +19,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $alamat = $_POST['register-alamat'];
         $no_telp = $_POST['register-no_telp'];
 
-        $query = "INSERT INTO anggota_222274 (nama_222274, email_222274, password_222274, alamat_222274, no_telp_222274, tanggal_daftar_222274)
-                  VALUES ('$nama', '$username', '$password', '$alamat', '$no_telp', CURDATE())";
-    } else { // admin
-        $query = "INSERT INTO admin (username, password, nama_lengkap)
-                  VALUES ('$username', '$password', '$nama')";
+        // 🧩 Gunakan prepared statement agar lebih aman
+        $stmt = $conn->prepare("INSERT INTO anggota_222274 
+            (nama_222274, email_222274, password_222274, alamat_222274, no_telp_222274, tanggal_daftar_222274)
+            VALUES (?, ?, ?, ?, ?, CURDATE())");
+        $stmt->bind_param("sssss", $nama, $username, $password, $alamat, $no_telp);
+    } else { 
+        // 🧩 Tabel admin_222274, bukan admin
+        $stmt = $conn->prepare("INSERT INTO admin_222274 
+            (username_222274, password_222274, nama_lengkap_222274)
+            VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $username, $password, $nama);
     }
 
-    if (mysqli_query($conn, $query)) {
+    if ($stmt->execute()) {
         $successMsg = 'Registrasi berhasil! Silakan <a href="login.php" class="alert-link">login</a>.';
     } else {
-        $errorMsg = "Registrasi gagal: " . mysqli_error($conn);
+        $errorMsg = "Registrasi gagal: " . $stmt->error;
     }
+
+    $stmt->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -42,8 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Registrasi Perpustakaan</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-body, html {height: 100%; margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed; background-size: cover;}
+body, html {
+  height: 100%; margin:0;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80')
+    no-repeat center center fixed; background-size: cover;
+}
 .overlay { background-color: rgba(0,0,0,0.6); position:absolute; top:0; left:0; width:100%; height:100%; }
 .container-register { position: relative; z-index:2; height:100%; display:flex; justify-content:center; align-items:center; }
 .card-register { background: rgba(255,255,255,0.95); border-radius:15px; padding:30px; max-width:450px; width:100%; box-shadow:0 8px 20px rgba(0,0,0,0.3);}
