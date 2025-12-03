@@ -9,21 +9,23 @@ include 'config/connect.php';
 $loginError = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama = trim($_POST['login-nama'] ?? '');
+    $loginNama = trim($_POST['login-nama'] ?? '');
     $password = $_POST['login-password'] ?? '';
     $role = $_POST['login-role'] ?? '';
 
-    if ($nama === '' || $password === '' || $role === '') {
+    if ($loginNama === '' || $password === '' || $role === '') {
         $loginError = "Semua field harus diisi!";
     } else {
         if ($role === 'admin') {
-            $sql = "SELECT * FROM admin_222274 WHERE nama_lengkap_222274 = ? LIMIT 1";
+            // Admin tetap pakai username
+            $sql = "SELECT * FROM admin_222274 WHERE username_222274 = ? LIMIT 1";
         } else {
+            // Anggota login pakai nama
             $sql = "SELECT * FROM anggota_222274 WHERE nama_222274 = ? LIMIT 1";
         }
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $nama);
+        $stmt->bind_param("s", $loginNama);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -48,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $loginError = "Password salah!";
             }
         } else {
-            $loginError = "Nama pengguna tidak ditemukan!";
+            $loginError = $role === 'admin' ? "Username admin tidak ditemukan!" : "Nama anggota tidak ditemukan!";
         }
 
         $stmt->close();
@@ -67,8 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 body, html {
     height:100%; margin:0;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80') 
-    no-repeat center center fixed;
+    background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
     background-size: cover;
 }
 .overlay { background-color: rgba(0,0,0,0.6); position:absolute; top:0; left:0; width:100%; height:100%; }
@@ -92,8 +93,8 @@ body, html {
 
     <form action="" method="post">
       <div class="mb-3">
-        <label for="login-nama" class="form-label">Nama</label>
-        <input type="text" class="form-control" id="login-nama" name="login-nama" placeholder="Masukkan nama" required>
+        <label for="login-nama" class="form-label">Email / Username</label>
+        <input type="text" class="form-control" id="login-nama" name="login-nama" placeholder="Masukkan email atau username" required>
       </div>
 
       <div class="mb-3">
@@ -106,7 +107,7 @@ body, html {
         <select class="form-select" id="login-role" name="login-role" required>
           <option value="" selected>Pilih role</option>
           <option value="admin">Admin</option>
-          <option value="user">User</option>
+          <option value="user">Anggota</option>
         </select>
       </div>
 

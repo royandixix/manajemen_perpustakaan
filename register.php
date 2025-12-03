@@ -10,35 +10,43 @@ $successMsg = '';
 $errorMsg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama = $_POST['register-nama'];
-    $username = $_POST['register-username'];
+    $nama = trim($_POST['register-nama']);
+    $email = trim($_POST['register-username']);
     $password = password_hash($_POST['register-password'], PASSWORD_DEFAULT);
     $role = $_POST['register-role'];
 
     if ($role === 'user') {
-        $alamat = $_POST['register-alamat'];
-        $no_telp = $_POST['register-no_telp'];
+        $alamat = trim($_POST['register-alamat']);
+        $no_telp = trim($_POST['register-no_telp']);
 
-        // 🧩 Gunakan prepared statement agar lebih aman
+        // Gunakan prepared statement untuk keamanan
         $stmt = $conn->prepare("INSERT INTO anggota_222274 
             (nama_222274, email_222274, password_222274, alamat_222274, no_telp_222274, tanggal_daftar_222274)
             VALUES (?, ?, ?, ?, ?, CURDATE())");
-        $stmt->bind_param("sssss", $nama, $username, $password, $alamat, $no_telp);
-    } else { 
-        // 🧩 Tabel admin_222274, bukan admin
+        $stmt->bind_param("sssss", $nama, $email, $password, $alamat, $no_telp);
+    } else if ($role === 'admin') { 
+        // Insert ke tabel admin_222274
         $stmt = $conn->prepare("INSERT INTO admin_222274 
             (username_222274, password_222274, nama_lengkap_222274)
             VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $password, $nama);
-    }
-
-    if ($stmt->execute()) {
-        $successMsg = 'Registrasi berhasil! Silakan <a href="login.php" class="alert-link">login</a>.';
+        $stmt->bind_param("sss", $email, $password, $nama);
     } else {
-        $errorMsg = "Registrasi gagal: " . $stmt->error;
+        $errorMsg = 'Role tidak valid!';
     }
 
-    $stmt->close();
+    if (!isset($errorMsg)) {
+        if ($stmt->execute()) {
+            $successMsg = 'Registrasi berhasil! Silakan <a href="login.php" class="alert-link">login</a>.';
+        } else {
+            // Tangani error duplicate email
+            if ($conn->errno == 1062) {
+                $errorMsg = "Email sudah terdaftar!";
+            } else {
+                $errorMsg = "Registrasi gagal: " . $stmt->error;
+            }
+        }
+        $stmt->close();
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -52,8 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 body, html {
   height: 100%; margin:0;
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80')
-    no-repeat center center fixed; background-size: cover;
+  background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+  background-size: cover;
 }
 .overlay { background-color: rgba(0,0,0,0.6); position:absolute; top:0; left:0; width:100%; height:100%; }
 .container-register { position: relative; z-index:2; height:100%; display:flex; justify-content:center; align-items:center; }
@@ -97,7 +105,7 @@ body, html {
         <select class="form-select" id="register-role" name="register-role" required onchange="toggleUserFields(this.value)">
           <option value="" selected>Pilih role</option>
           <option value="admin">Admin</option>
-          <option value="user">User</option>
+          <option value="user">Anggota</option>
         </select>
       </div>
 

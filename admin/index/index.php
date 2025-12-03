@@ -28,9 +28,8 @@ require __DIR__ . '/../../config/connect.php';
         // Query semua data
         $resBuku = mysqli_query($conn, "SELECT COUNT(*) AS total FROM buku_222274");
         $resAnggota = mysqli_query($conn, "SELECT COUNT(*) AS total FROM anggota_222274");
-        $resDipinjam = mysqli_query($conn, "SELECT COUNT(*) AS total FROM peminjaman_222274 WHERE status='dipinjam'");
+        $resDipinjam = mysqli_query($conn, "SELECT COUNT(*) AS total FROM peminjaman_222274 WHERE status_222274='dipinjam'");
         
-
         $totalBuku = mysqli_fetch_assoc($resBuku)['total'] ?? 0;
         $totalAnggota = mysqli_fetch_assoc($resAnggota)['total'] ?? 0;
         $totalDipinjam = mysqli_fetch_assoc($resDipinjam)['total'] ?? 0;
@@ -60,7 +59,7 @@ require __DIR__ . '/../../config/connect.php';
 
 <?php include __DIR__ . '/../templates/footer.php'; ?>
 
-<!-- Bootstrap JS (jika belum ada) -->
+<!-- Bootstrap JS & dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -74,9 +73,6 @@ require __DIR__ . '/../../config/connect.php';
 <!-- Counter JS -->
 <script src="../js/index.js"></script>
 
-
-
-<!-- Tambahkan efek hover pada card -->
 <style>
 .dashboard-card {
     border-radius: 12px;

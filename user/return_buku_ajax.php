@@ -2,28 +2,43 @@
 session_start();
 require '../config/connect.php';
 
+// Pastikan USER login
 if (!isset($_SESSION['user']) || !isset($_POST['id'])) {
-    echo json_encode(['success'=>false,'msg'=>'Akses ditolak']);
+    echo json_encode(['success'=>false, 'msg'=>'Anda harus login sebagai anggota']);
     exit;
 }
 
-$id_anggota = $_SESSION['user']['id_anggota_222274'];
-$id = intval($_POST['id']);
+$id_anggota = intval($_SESSION['user']['id_anggota_222274']);
+$id_peminjaman = intval($_POST['id']);
 
-// Cek buku yang sedang dipinjam
-$cek = mysqli_query($conn, "SELECT * FROM peminjaman_222274 WHERE id_peminjaman=$id AND id_anggota=$id_anggota AND status='dipinjam'");
-if(mysqli_num_rows($cek)){
-    $p = mysqli_fetch_assoc($cek);
+// Cek apakah peminjaman milik user & masih dipinjam
+$stmt = $conn->prepare("
+    SELECT id_peminjaman_222274
+    FROM peminjaman_222274
+    WHERE id_peminjaman_222274 = ?
+      AND id_anggota_222274 = ?
+      AND status_222274 = 'dipinjam'
+");
+$stmt->bind_param("ii", $id_peminjaman, $id_anggota);
+$stmt->execute();
+$res = $stmt->get_result();
 
-    // Update status peminjaman
-    mysqli_query($conn, "UPDATE peminjaman_222274 SET status='dikembalikan', tanggal_kembali=CURDATE() WHERE id_peminjaman=$id");
-    // Update stok buku
-    mysqli_query($conn, "UPDATE buku_222274 SET stok=stok+1 WHERE id_buku={$p['id_buku']}");
-    // Tambahkan record pengembalian
-    mysqli_query($conn, "INSERT INTO pengembalian_222274 (id_peminjaman, tanggal_dikembalikan, denda) VALUES ($id, CURDATE(), 0)");
-
-    echo json_encode(['success'=>true,'msg'=>'Buku berhasil dikembalikan']);
-}else{
-    echo json_encode(['success'=>false,'msg'=>'Buku tidak bisa dikembalikan']);
+if ($res->num_rows === 0) {
+    echo json_encode(['success'=>false,'msg'=>'Data tidak valid atau buku sudah diajukan untuk dikembalikan']);
+    exit;
 }
-?>
+
+// Update status ke menunggu admin
+$stmtUp = $conn->prepare("
+    UPDATE peminjaman_222274
+    SET status_222274 = 'menunggu_konfirmasi_pengembalian'
+    WHERE id_peminjaman_222274 = ?
+");
+$stmtUp->bind_param("i", $id_peminjaman);
+$stmtUp->execute();
+$stmtUp->close();
+
+echo json_encode([
+    'success' => true,
+    'msg' => 'Permohonan pengembalian dikirim. Menunggu konfirmasi admin.'
+]);
