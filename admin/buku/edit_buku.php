@@ -32,6 +32,7 @@ if ($res && $res->num_rows > 0) {
 
 if(isset($_POST['submit'])){
     $judul = $conn->real_escape_string($_POST['judul']);
+    $deskripsi = $conn->real_escape_string($_POST['deskripsi']);
     $penulis = $conn->real_escape_string($_POST['penulis']);
     $penerbit = $conn->real_escape_string($_POST['penerbit']);
     $tahun = intval($_POST['tahun_terbit']);
@@ -75,6 +76,7 @@ if(isset($_POST['submit'])){
     if(!isset($error)){
         $sql_update = "UPDATE buku_222274 SET 
             judul_222274='$judul',
+            deskripsi_222274='$deskripsi',
             penulis_222274='$penulis',
             penerbit_222274='$penerbit',
             tahun_terbit_222274=$tahun,
@@ -110,6 +112,12 @@ if(isset($_POST['submit'])){
     <div class="mb-3">
         <label class="form-label">Judul Buku</label>
         <input type="text" name="judul" class="form-control" value="<?= htmlspecialchars($buku['judul_222274']) ?>" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Deskripsi Buku</label>
+        <textarea name="deskripsi" class="form-control" rows="4"><?= htmlspecialchars($buku['deskripsi_222274'] ?? '') ?></textarea>
+
     </div>
 
     <div class="mb-3">

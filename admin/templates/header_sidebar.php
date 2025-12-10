@@ -389,7 +389,7 @@ $namaAdmin = $_SESSION['admin']['nama'] ?? 'Admin';
         transition: width 0.6s, height 0.6s;
 
 
-         /* kode baru di tambahkan */
+        /* kode baru di tambahkan */
         list-style: none;
         font-synthesis-weight: none;
 
@@ -461,6 +461,11 @@ $namaAdmin = $_SESSION['admin']['nama'] ?? 'Admin';
         <li class="nav-item mb-1">
             <a class="nav-link ripple <?= $current_page == 'pengembalian.php' ? 'active' : '' ?>" href="../pengembalian/pengembalian.php">
                 <span class="material-symbols-outlined">assignment_return</span> Pengembalian
+            </a>
+        </li>
+        <li class="nav-item mb-1">
+            <a class="nav-link ripple <?= $current_page == 'laporan.php' ? 'active' : '' ?>" href="../laporan/laporan.php">
+                <span class="material-symbols-outlined">insights</span> Laporan
             </a>
         </li>
     </ul>

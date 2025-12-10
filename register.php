@@ -4,7 +4,6 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 include 'config/connect.php';
-session_start();
 
 $successMsg = '';
 $errorMsg = '';
@@ -12,43 +11,46 @@ $errorMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama = trim($_POST['register-nama']);
     $email = trim($_POST['register-username']);
-    $password = password_hash($_POST['register-password'], PASSWORD_DEFAULT);
     $role = $_POST['register-role'];
+
+    // Default password
+    $password = 'default123';
+    $password_hashed = password_hash($password, PASSWORD_DEFAULT);
 
     if ($role === 'user') {
         $alamat = trim($_POST['register-alamat']);
         $no_telp = trim($_POST['register-no_telp']);
 
-        // Gunakan prepared statement untuk keamanan
         $stmt = $conn->prepare("INSERT INTO anggota_222274 
             (nama_222274, email_222274, password_222274, alamat_222274, no_telp_222274, tanggal_daftar_222274)
             VALUES (?, ?, ?, ?, ?, CURDATE())");
-        $stmt->bind_param("sssss", $nama, $email, $password, $alamat, $no_telp);
-    } else if ($role === 'admin') { 
-        // Insert ke tabel admin_222274
+        $stmt->bind_param("sssss", $nama, $email, $password_hashed, $alamat, $no_telp);
+
+    } elseif ($role === 'admin') {
         $stmt = $conn->prepare("INSERT INTO admin_222274 
             (username_222274, password_222274, nama_lengkap_222274)
             VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $email, $password, $nama);
+        $stmt->bind_param("sss", $email, $password_hashed, $nama);
+
     } else {
-        $errorMsg = 'Role tidak valid!';
+        $errorMsg = "Role tidak valid!";
     }
 
-    if (!isset($errorMsg)) {
+    if (empty($errorMsg)) {
         if ($stmt->execute()) {
-            $successMsg = 'Registrasi berhasil! Silakan <a href="login.php" class="alert-link">login</a>.';
+            $successMsg = "Registrasi berhasil! Password default: <strong>$password</strong>. Silakan <a href='login.php'>login</a>.";
         } else {
-            // Tangani error duplicate email
             if ($conn->errno == 1062) {
-                $errorMsg = "Email sudah terdaftar!";
+                $errorMsg = "Email atau username sudah terdaftar!";
             } else {
-                $errorMsg = "Registrasi gagal: " . $stmt->error;
+                $errorMsg = "Registrasi gagal: ".$stmt->error;
             }
         }
         $stmt->close();
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -57,19 +59,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Registrasi Perpustakaan</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-body, html {
-  height: 100%; margin:0;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
-  background-size: cover;
-}
-.overlay { background-color: rgba(0,0,0,0.6); position:absolute; top:0; left:0; width:100%; height:100%; }
-.container-register { position: relative; z-index:2; height:100%; display:flex; justify-content:center; align-items:center; }
-.card-register { background: rgba(255,255,255,0.95); border-radius:15px; padding:30px; max-width:450px; width:100%; box-shadow:0 8px 20px rgba(0,0,0,0.3);}
-.btn-success { border-radius:50px; }
-.form-control, .form-select, textarea { border-radius:10px; }
-.login-link { color: #0d6efd; text-decoration:none; }
-.login-link:hover { text-decoration: underline; }
+body, html {height:100%;margin:0;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed; background-size: cover;}
+.overlay {background-color: rgba(0,0,0,0.6);position:absolute;top:0;left:0;width:100%;height:100%;}
+.container-register {position: relative; z-index:2; height:100%; display:flex; justify-content:center; align-items:center;}
+.card-register {background: rgba(255,255,255,0.95); border-radius:15px; padding:30px; max-width:450px; width:100%; box-shadow:0 8px 20px rgba(0,0,0,0.3);}
+.btn-success {border-radius:50px;}
+.form-control, .form-select, textarea {border-radius:10px;}
+.login-link {color: #0d6efd;text-decoration:none;}
+.login-link:hover {text-decoration: underline;}
 </style>
 </head>
 <body>
@@ -93,11 +91,6 @@ body, html {
       <div class="mb-3">
         <label for="register-username" class="form-label">Email</label>
         <input type="email" class="form-control" id="register-username" name="register-username" placeholder="Masukkan email" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="register-password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="register-password" name="register-password" placeholder="Masukkan password" required>
       </div>
 
       <div class="mb-3">

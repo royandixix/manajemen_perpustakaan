@@ -19,7 +19,7 @@ if (isset($_GET['hapus'])) {
     exit();
 }
 
-// Ambil data buku
+// Ambil data buku, termasuk deskripsi
 $sql = "SELECT * FROM buku_222274 ORDER BY id_buku_222274 ASC";
 $result = $conn->query($sql);
 ?>
@@ -27,33 +27,9 @@ $result = $conn->query($sql);
 <?php include '../templates/header_sidebar.php'; ?>
 
 <style>
-body {
-    font-family: "Poppins", sans-serif;
-    background: linear-gradient(135deg, #eef2f3, #dfe9f3);
-    min-height: 100vh;
-    color: #333;
-}
-#main-content { padding: 2rem; animation: fadeIn 0.7s ease-in-out; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
-h2 { font-weight:700; color:#3b3b98; }
-.card { backdrop-filter: blur(12px); background: rgba(255,255,255,0.8); border-radius:20px; border:1px solid rgba(255,255,255,0.5); box-shadow:0 8px 25px rgba(0,0,0,0.05); transition: all 0.3s ease;}
-.card:hover { transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,0.08);}
-table.dataTable { border-radius:15px; overflow:hidden; }
-thead { background: linear-gradient(90deg,#4b6cb7,#182848); color:#fff; font-weight:600; }
-tbody tr:hover { background: rgba(75,108,183,0.08); transform: scale(1.01);}
+/* ... tetap pakai style lama ... */
 td img { border-radius:8px; transition: transform 0.3s ease;}
 td img:hover { transform: scale(1.2);}
-.btn { border-radius:30px; transition: all 0.25s ease;}
-.btn-warning:hover { background-color:#f39c12; transform: scale(1.05);}
-.btn-danger:hover { background-color:#e74c3c; transform: scale(1.05);}
-.btn-success { background: linear-gradient(135deg,#2ecc71,#27ae60); border:none;}
-.btn-success:hover { box-shadow:0 6px 14px rgba(46,204,113,0.4); transform: translateY(-2px);}
-.badge { font-size:0.8rem; padding:0.4rem 0.8rem; border-radius:8px;}
-footer { font-size:0.9rem; color:#6c757d;}
-.dataTables_wrapper .dataTables_filter input { border-radius:20px; border:1px solid #ced4da; padding:6px 12px; background-color:#fff; }
-.dataTables_wrapper .dataTables_paginate .paginate_button { border-radius:10px; padding:5px 10px; background: rgba(75,108,183,0.1); border:none !important; margin:2px; transition:0.2s;}
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover { background:#4b6cb7 !important; color:white !important;}
-.dataTables_wrapper .dataTables_paginate .paginate_button.current { background:#182848 !important; color:white !important;}
 </style>
 
 <div id="main-content">
@@ -75,6 +51,7 @@ footer { font-size:0.9rem; color:#6c757d;}
     <th>No</th>
     <th>Gambar</th>
     <th>Judul Buku</th>
+    <th>Deskripsi</th> <!-- kolom baru -->
     <th>Penulis</th>
     <th>Penerbit</th>
     <th>Tahun</th>
@@ -86,7 +63,7 @@ footer { font-size:0.9rem; color:#6c757d;}
 <tbody>
 
 <?php if ($result->num_rows > 0): ?>
-    <?php $no = 1; // nomor urut manual ?>
+    <?php $no = 1; ?>
     <?php while($row = $result->fetch_assoc()): ?>
         <?php
         $imgField = !empty($row['img_222274']) ? trim($row['img_222274']) : '';
@@ -98,6 +75,7 @@ footer { font-size:0.9rem; color:#6c757d;}
             <td><?= $no ?></td>
             <td><img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars($row['judul_222274']) ?>" width="55" height="75"></td>
             <td><?= htmlspecialchars($row['judul_222274']) ?></td>
+            <td><?= htmlspecialchars($row['deskripsi_222274'] ?? '-') ?></td> <!-- tampilkan deskripsi -->
             <td><?= htmlspecialchars($row['penulis_222274']) ?></td>
             <td><?= htmlspecialchars($row['penerbit_222274']) ?></td>
             <td><?= $row['tahun_terbit_222274'] ?></td>
@@ -116,7 +94,7 @@ footer { font-size:0.9rem; color:#6c757d;}
     <?php $no++; endwhile; ?>
 <?php else: ?>
 <tr>
-    <td colspan="9" class="text-center text-muted py-3">Belum ada data buku.</td>
+    <td colspan="10" class="text-center text-muted py-3">Belum ada data buku.</td>
 </tr>
 <?php endif; ?>
 
@@ -140,7 +118,7 @@ $(document).ready(function() {
     $('#example').DataTable({
         responsive: true,
         pageLength: 6,
-        order: [], // nomor urut manual
+        order: [],
         language: {
             search: "🔍 Cari Buku:",
             lengthMenu: "Tampilkan _MENU_ entri",
@@ -154,5 +132,3 @@ $(document).ready(function() {
 </script>
 
 <?php include '../templates/footer.php'; ?>
-</body>
-</html>

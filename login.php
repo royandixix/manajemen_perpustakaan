@@ -17,10 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $loginError = "Semua field harus diisi!";
     } else {
         if ($role === 'admin') {
-            // Admin tetap pakai username
             $sql = "SELECT * FROM admin_222274 WHERE username_222274 = ? LIMIT 1";
         } else {
-            // Anggota login pakai nama
             $sql = "SELECT * FROM anggota_222274 WHERE nama_222274 = ? LIMIT 1";
         }
 
@@ -72,9 +70,28 @@ body, html {
     background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
     background-size: cover;
 }
-.overlay { background-color: rgba(0,0,0,0.6); position:absolute; top:0; left:0; width:100%; height:100%; }
-.container-login { position: relative; z-index: 2; height: 100%; display:flex; justify-content:center; align-items:center; }
-.card-login { background: rgba(255,255,255,0.95); border-radius:15px; padding:30px; max-width:400px; width:100%; box-shadow:0 8px 20px rgba(0,0,0,0.3); }
+.overlay { 
+    background-color: rgba(0,0,0,0.6); 
+    position:absolute; top:0; left:0; width:100%; height:100%; 
+    z-index:1; 
+    pointer-events: none; /* overlay tidak menutupi klik */
+}
+.container-login { 
+    position: relative; 
+    z-index:2; 
+    height:100%; 
+    display:flex; 
+    justify-content:center; 
+    align-items:center; 
+}
+.card-login { 
+    background: rgba(255,255,255,0.95); 
+    border-radius:15px; 
+    padding:30px; 
+    max-width:400px; 
+    width:100%; 
+    box-shadow:0 8px 20px rgba(0,0,0,0.3); 
+}
 .btn-primary { border-radius:50px; }
 .form-control, .form-select { border-radius:10px; }
 .register-link { color:#0d6efd; text-decoration:none; }
@@ -112,7 +129,9 @@ body, html {
       </div>
 
       <button type="submit" class="btn btn-primary w-100">Login</button>
-      <p class="text-center mt-3">Belum punya akun? <a href="register.php" class="register-link">Daftar</a></p>
+      <p class="text-center mt-3">
+        Belum punya akun? <a href="register.php" class="register-link">Daftar</a>
+      </p>
     </form>
   </div>
 </div>

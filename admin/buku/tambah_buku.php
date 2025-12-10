@@ -14,6 +14,7 @@ if (!isset($_SESSION['admin'])) {
 // === PROSES SUBMIT ===
 if (isset($_POST['submit'])) {
     $judul = $conn->real_escape_string($_POST['judul']);
+    $deskripsi = $conn->real_escape_string($_POST['deskripsi']);
     $penulis = $conn->real_escape_string($_POST['penulis']);
     $penerbit = $conn->real_escape_string($_POST['penerbit']);
     $tahun = intval($_POST['tahun_terbit']);
@@ -23,35 +24,20 @@ if (isset($_POST['submit'])) {
 
     // === FIX DUPLIKAT KATEGORI ===
     if (!empty($kategori_baru)) {
-
-        // cek apakah kategori baru sudah ada
-        $cek = $conn->query("SELECT nama_kategori_222274 
-                             FROM kategori_222274 
-                             WHERE nama_kategori_222274 = '$kategori_baru'");
-
+        $cek = $conn->query("SELECT nama_kategori_222274 FROM kategori_222274 WHERE nama_kategori_222274 = '$kategori_baru'");
         if ($cek->num_rows == 0) {
-            // kalau belum ada → insert
             $conn->query("INSERT INTO kategori_222274 (nama_kategori_222274) VALUES ('$kategori_baru')");
         }
-
-        // pakai kategori baru
         $kategori_final = $kategori_baru;
-
     } else {
-        // memakai kategori yang dipilih user di dropdown
         $kategori_final = $kategori_pilih;
     }
 
     // ========= Upload Gambar =========
     $namaFile = null;
-
     if (!empty($_FILES['gambar']['name'])) {
         $target_dir = "../../uploads/sampul/";
-
-        // pastikan folder ada
-        if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0777, true);
-        }
+        if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
 
         $ext = strtolower(pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION));
         $allowed = ['jpg','jpeg','png','gif','webp'];
@@ -61,7 +47,6 @@ if (isset($_POST['submit'])) {
         } else {
             $namaFile = "buku_" . time() . "." . $ext;
             $target_file = $target_dir . $namaFile;
-
             if (!move_uploaded_file($_FILES['gambar']['tmp_name'], $target_file)) {
                 $error = "Gagal upload gambar!";
             }
@@ -71,9 +56,8 @@ if (isset($_POST['submit'])) {
     // ========= INSERT DATA BUKU =========
     if (!isset($error)) {
         $sql = "INSERT INTO buku_222274 
-                (judul_222274, penulis_222274, penerbit_222274, tahun_terbit_222274, kategori_222274, stok_222274, img_222274)
-                VALUES ('$judul', '$penulis', '$penerbit', '$tahun', '$kategori_final', '$stok', '$namaFile')";
-
+                (judul_222274, deskripsi_222274, penulis_222274, penerbit_222274, tahun_terbit_222274, kategori_222274, stok_222274, img_222274)
+                VALUES ('$judul', '$deskripsi', '$penulis', '$penerbit', '$tahun', '$kategori_final', '$stok', '$namaFile')";
         if ($conn->query($sql)) {
             $_SESSION['flash'] = "Buku berhasil ditambahkan!";
             header("Location: buku.php");
@@ -98,23 +82,6 @@ if ($res && $res->num_rows > 0) {
 
 <?php include '../templates/header_sidebar.php'; ?>
 
-<style>
-/* TIDAK DIUBAH — SAME UI */
-body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #eef2f3, #dfe9f3); min-height:100vh; color:#333; }
-#main-content { padding:2rem; animation: fadeIn 0.6s ease-in-out; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
-h2 { font-weight:700; background:linear-gradient(90deg,#4facfe,#00f2fe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.card { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius:20px; border:1px solid rgba(255,255,255,0.5); box-shadow:0 8px 25px rgba(0,0,0,0.08); transition:all 0.3s ease; }
-.card:hover { transform:translateY(-4px); }
-.form-control, .form-select { border-radius:15px; border:1px solid #ccc; transition: all 0.25s ease; }
-.form-control:focus, .form-select:focus { box-shadow:0 0 0 0.2rem rgba(0,123,255,0.25); transform:scale(1.01); }
-.btn { border-radius:25px; transition:all 0.25s ease; }
-.btn-primary { background: linear-gradient(135deg,#4facfe,#00f2fe); border:none; }
-.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 15px rgba(79,172,254,0.4); }
-.btn-secondary:hover { transform:scale(1.05); }
-footer { color:#6c757d; font-size:0.9rem; }
-</style>
-
 <div id="main-content">
 <h2 class="fw-bold mb-4 mt-5">
     <span class="material-symbols-outlined align-middle me-1 text-primary">add_circle</span> Tambah Buku
@@ -126,6 +93,11 @@ footer { color:#6c757d; font-size:0.9rem; }
         <div class="mb-3">
             <label class="form-label">Judul Buku</label>
             <input type="text" name="judul" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Deskripsi Buku</label>
+            <textarea name="deskripsi" class="form-control" rows="4" placeholder="Isi deskripsi buku"></textarea>
         </div>
 
         <div class="mb-3">
@@ -194,5 +166,3 @@ Swal.fire({ icon:'error', title:'Gagal', text:'<?= addslashes($error) ?>' });
 </script>
 
 <?php include '../templates/footer.php'; ?>
-</body>
-</html>
