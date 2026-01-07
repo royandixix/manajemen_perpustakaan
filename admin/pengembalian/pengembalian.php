@@ -128,6 +128,9 @@ include '../templates/header_sidebar.php';
 
 </div>
 
+
+
+
 <!-- Footer -->
 <footer class="text-center text-muted mt-5 mb-3">
     &copy; <?= date('Y') ?> <strong>PerpustakaanKu</strong>. Semua hak dilindungi.

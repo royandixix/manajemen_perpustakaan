@@ -14,7 +14,7 @@
         }
 
         // Ambil id anggota dari URL
-        if(!isset($_GET['id'])) {
+        if (!isset($_GET['id'])) {
             header("Location: anggota.php");
             exit();
         }
@@ -25,14 +25,14 @@
         $sql = "SELECT * FROM anggota_222274 WHERE id_anggota_222274 = $id";
         $result = $conn->query($sql);
 
-        if($result->num_rows == 0){
+        if ($result->num_rows == 0) {
             die("Anggota tidak ditemukan.");
         }
 
         $anggota = $result->fetch_assoc();
 
         // Proses form jika submit
-        if(isset($_POST['submit'])) {
+        if (isset($_POST['submit'])) {
             $nama = $conn->real_escape_string($_POST['nama']);
             $email = $conn->real_escape_string($_POST['email']);
             $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : $anggota['password_222274'];
@@ -47,7 +47,7 @@
                 no_telp_222274='$no_telp'
                 WHERE id_anggota_222274=$id";
 
-            if($conn->query($sql_update) === TRUE){
+            if ($conn->query($sql_update) === TRUE) {
                 $success = "Data anggota berhasil diupdate!";
                 // refresh data setelah update
                 $anggota = $conn->query($sql)->fetch_assoc();
@@ -55,7 +55,9 @@
                 $error = "Error: " . $conn->error;
             }
         }
-        ?>
+        ?>      
+
+        
 
         <?php include '../templates/header_sidebar.php'; ?>
 
@@ -65,8 +67,8 @@
                 Edit Anggota
             </h2>
 
-            <?php if(isset($success)) echo '<div class="alert alert-success">'.$success.'</div>'; ?>
-            <?php if(isset($error)) echo '<div class="alert alert-danger">'.$error.'</div>'; ?>
+            <?php if (isset($success)) echo '<div class="alert alert-success">' . $success . '</div>'; ?>
+            <?php if (isset($error)) echo '<div class="alert alert-danger">' . $error . '</div>'; ?>
 
             <div class="card shadow-sm">
                 <div class="card-body">
