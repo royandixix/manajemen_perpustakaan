@@ -98,8 +98,8 @@ class PDF extends FPDF {
         
         $this->SetFont('Arial', '', 10);
         $this->SetTextColor(108, 117, 125);
-        $this->Cell(0, 5, 'Jl. Contoh No. 123, Manado, Sulawesi Utara', 0, 1, 'C');
-        $this->Cell(0, 5, 'Telp: (0431) 123456 | Email: perpustakaan@example.com', 0, 1, 'C');
+        $this->Cell(0, 5, 'Jl. A.P. Pettarani No. 45, Makassar, Sulawesi Selatan', 0, 1, 'C');
+        $this->Cell(0, 5, 'Telp: (0411) 567890 | Email: perpustakaan@makassar.go.id', 0, 1, 'C');
         
         // Garis pemisah
         $this->SetLineWidth(0.8);
@@ -365,7 +365,7 @@ if(count($data) > 0) {
 $pdf->Ln(15);
 $pdf->SetFont('Arial', '', 10);
 $pdf->SetTextColor(33, 37, 41);
-$pdf->Cell(0, 6, 'Manado, ' . date('d F Y'), 0, 1, 'R');
+$pdf->Cell(0, 6, 'Makassar, ' . date('d F Y'), 0, 1, 'R');
 $pdf->Cell(0, 6, 'Kepala Perpustakaan', 0, 1, 'R');
 $pdf->Ln(15);
 $pdf->SetFont('Arial', 'BU', 10);
